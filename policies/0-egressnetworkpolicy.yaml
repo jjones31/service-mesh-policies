@@ -4,9 +4,9 @@ metadata:
   name: namespace-egress-policy
 spec:
   egress: 
-  - type: Allow
-    to:
-      dnsName: www.google.com
+  #- type: Allow
+  #  to:
+  #    dnsName: www.google.com
   - type: Deny
     to:
       cidrSelector: 0.0.0.0/0
