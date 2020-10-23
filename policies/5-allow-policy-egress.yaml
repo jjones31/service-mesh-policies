@@ -1,0 +1,29 @@
+apiVersion: "config.istio.io/v1alpha2"
+kind: handler
+metadata:
+  name: allow-egress-handler
+spec:
+  compiledAdapter: listchecker
+  params:
+    overrides: ["www.notgoogle.com"]
+    blacklist: false
+---
+apiVersion: "config.istio.io/v1alpha2"
+kind: instance
+metadata:
+  name: allow-egress-instance
+spec:
+  compiledTemplate: listentry
+  params:
+    value: request.host | "foo" # destination.service.name #source.labels["allow-google"] # destination.service.name # connection.requested_server_name | request.headers["authority"] | "blocked"
+
+---
+apiVersion: "config.istio.io/v1alpha2"
+kind: rule
+metadata:
+  name: allow-egress-rule
+spec:
+  match: source.labels["app"] == "istio-egressgateway" && destination.labels["app"] == "" # destination.labels["app"] != "telemetry" #&& destination.labels["app"]=="istio-egressgateway"
+  actions:
+  - handler: allow-egress-handler
+    instances: [ allow-egress-instance ]

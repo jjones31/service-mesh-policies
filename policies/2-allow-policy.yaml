@@ -1,0 +1,31 @@
+apiVersion: "config.istio.io/v1alpha2"
+kind: handler
+metadata:
+  name: allow-handler
+spec:
+  compiledAdapter: listchecker
+  params:
+    # providerUrl: A webservice only security team has authorization to modify. 
+    overrides: ["www.cnn.com"]  # overrides provide a static list
+    blacklist: false
+    entryType: CASE_INSENSITIVE_STRINGS
+---
+apiVersion: "config.istio.io/v1alpha2"
+kind: instance
+metadata:
+  name: allow-instance
+spec:
+  compiledTemplate: listentry
+  params:
+    value: destination.service.name #source.labels["allow-google"] # destination.service.name # connection.requested_server_name | request.headers["authority"] | "blocked"
+
+---
+apiVersion: "config.istio.io/v1alpha2"
+kind: rule
+metadata:
+  name: allow-rule
+spec:
+  match: source.labels["app"] == "sleep" # && destination.service.name == "www.google.com" # destination.labels["app"] != "telemetry" #&& destination.labels["app"]=="istio-egressgateway"
+  actions:
+  - handler: allow-handler
+    instances: [ allow-instance ]
