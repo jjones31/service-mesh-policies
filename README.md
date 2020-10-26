@@ -69,3 +69,17 @@ oc apply -f policies/1-google-service-entry.yaml -n fs-mesh-dev
 Now, open a terminal to the sleep pod and execute issue the curl command. You should see a response back from google. However, since the ServiceEntry is using the exportTo ".", executing 
 curl from fs-mesh-qa will not work. 
 
+export SOURCE_POD=$(oc get pod -l app=sleep -o jsonpath={.items..metadata.name} -n fs-mesh-dev )
+
+oc exec "$SOURCE_POD" -n fs-mesh-dev -c sleep -- curl -sL -o /dev/null -D - http://edition.cnn.com/politics
+
+
+
+  export SOURCE_POD2=$(oc get pod -l app=sleep-qa -o jsonpath={.items..metadata.name} -n fs-mesh-qa )
+
+
+  oc apply -f ./policies/cnn-virtual-service.yml -n istio-system
+
+  oc apply -f ./policies/cnn.yml -n istio-system
+
+   oc apply -f ./policies/cnn.yml -n fs-mesh-dev
