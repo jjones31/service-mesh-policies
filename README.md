@@ -51,35 +51,52 @@ oc apply -f 3-sleep-workload.yaml -n fs-mesh-dev
 oc apply -f 4-sleep-workload-qa.yaml -n fs-mesh-qa
 ```
 
-This completes the baseline setup for the cluster. At this point, if you terminal into the sleep container and issue:
+This completes the baseline setup for the cluster. At this point, you can test with:
 
 ```
-curl www.google.com
+export SOURCE_POD=$(oc get pod -l app=sleep -o jsonpath={.items..metadata.name} -n fs-mesh-dev )
+
+oc exec "$SOURCE_POD" -n fs-mesh-dev -c sleep -- curl -sL -o /dev/null -D - https://edition.cnn.com/politics
 ```
 
 you will not get a response. This is because the ServiceMeshControlPlane has *outboundTrafficPolicy* set to REGISTRY_ONLY. Since www.google.com is not in the service registry, it will not work. 
 
-### Enabling Google Access in fs-mesh-dev
-In order to get curl to work in fs-mesh-dev.sleep, add a ServiceEntry resource.
+### Set egress rules
+
+Deny all egress from fs-mesh-dev namespace
+
+Deny all egress frmo fs-mesh-qa namespace
+
+Allow only access to edition.cnn.com  from istio-system namespace
+
+`oc apply -f ./policies/0-egressnetworkpolicy.yaml`
+
+## Configure egress gateway to access edition.cnn.com
+
+`oc apply -f ./policies/1-cnn-gateway.yml`
+
+### Enabling CNN Access in fs-mesh-dev and fs-mesh-qa
+In order to get curl to work in fs-mesh-dev.sleep and fs-mesh-qa.sleep,, add a ServiceEntry resource.
 
 ```
-oc apply -f policies/1-google-service-entry.yaml -n fs-mesh-dev
+oc apply -f ./policies/2-cnn-serviceEntries.yml
 ```
 
-Now, open a terminal to the sleep pod and execute issue the curl command. You should see a response back from google. However, since the ServiceEntry is using the exportTo ".", executing 
-curl from fs-mesh-qa will not work. 
+Setup virtual service to route calls to edition.cnn.com to the egress gateway:
 
-export SOURCE_POD=$(oc get pod -l app=sleep -o jsonpath={.items..metadata.name} -n fs-mesh-dev )
+```
+oc apply -f ./policies/3-cnn-virtualService.yml
+```
 
-oc exec "$SOURCE_POD" -n fs-mesh-dev -c sleep -- curl -sL -o /dev/null -D - http://edition.cnn.com/politics
+Test access to editon.cnn.com from fs-mesh-dev
 
+`oc exec "$SOURCE_POD" -n fs-mesh-dev -c sleep -- curl -sL -o /dev/null -D - https://edition.cnn.com/politics`
 
+Test access to editon.cnn.com from fs-mesh-qa
 
-  export SOURCE_POD2=$(oc get pod -l app=sleep-qa -o jsonpath={.items..metadata.name} -n fs-mesh-qa )
+```
+export SOURCE_POD2=$(oc get pod -l app=sleep-qa -o jsonpath={.items..metadata.name} -n fs-mesh-qa )
 
+oc exec "$SOURCE_POD2" -n fs-mesh-qa -c sleep-qa -- curl -sL -o /dev/null -D - https://edition.cnn.com/politics 
 
-  oc apply -f ./policies/cnn-virtual-service.yml -n istio-system
-
-  oc apply -f ./policies/cnn.yml -n istio-system
-
-   oc apply -f ./policies/cnn.yml -n fs-mesh-dev
+```

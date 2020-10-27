@@ -2,11 +2,34 @@ apiVersion: network.openshift.io/v1
 kind: EgressNetworkPolicy
 metadata:
   name: namespace-egress-policy
+  namespace: fs-mesh-dev
 spec:
   egress: 
-  #- type: Allow
-  #  to:
-  #    dnsName: www.google.com
+  - type: Deny
+    to:
+      cidrSelector: 0.0.0.0/0
+---
+apiVersion: network.openshift.io/v1
+kind: EgressNetworkPolicy
+metadata:
+  name: namespace-egress-policy
+  namespace: fs-mesh-qa
+spec:
+  egress: 
+  - type: Deny
+    to:
+      cidrSelector: 0.0.0.0/0
+---
+apiVersion: network.openshift.io/v1
+kind: EgressNetworkPolicy
+metadata:
+  name: namespace-egress-policy
+  namespace: istio-system
+spec:
+  egress:
+  - type: Allow
+    to:
+      dnsName: edition.cnn.com 
   - type: Deny
     to:
       cidrSelector: 0.0.0.0/0

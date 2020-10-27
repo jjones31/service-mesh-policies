@@ -1,10 +1,10 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: ServiceEntry
 metadata:
-  name: edition.cnn.com
+  name: google.com
 spec:
   hosts:
-  - edition.cnn.com
+  - google.com
   ports:
   - number: 80
     name: http-port
