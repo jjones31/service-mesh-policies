@@ -54,7 +54,7 @@ oc apply -f 4-sleep-workload-qa.yaml -n fs-mesh-qa
 
 Deny all egress from fs-mesh-dev namespace
 
-Deny all egress frmo fs-mesh-qa namespace
+Deny all egress from fs-mesh-qa namespace
 
 Allow only access to edition.cnn.com  from istio-system namespace
 
