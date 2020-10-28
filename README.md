@@ -43,7 +43,7 @@ prometheus-7fc9c6d99-2cdck                2/2     Running   0          21m
 ```
 
 #### Base Application Deployment
-This example uses the sleep container so we can use curl in the terminal window. This will enable us to attempt to connect to www.google.com.
+This example uses the sleep container so we can use curl in the terminal window. This will enable us to attempt to connect to edition.cnn.com.
 
 ```
 oc apply -f 3-sleep-workload.yaml -n fs-mesh-dev
