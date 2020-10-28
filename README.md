@@ -1,6 +1,5 @@
 # Introduction
-OpenShift Service Mesh (OSSM) provides the ability to add policies for authorization and telemetry. This repository represents my exploration into the varios ways to limit
-egress traffic from single control plane with two different namespaces/projects as members. 
+OpenShift Service Mesh (OSSM) provides the ability to add policies for authorization and telemetry. This repository represents my exploration into the varios ways to limit egress traffic from single control plane with two different namespaces/projects as members. 
 
 ### Cluster Baseline
 In order to setup the cluster, run the following scripts. 
@@ -51,16 +50,6 @@ oc apply -f 3-sleep-workload.yaml -n fs-mesh-dev
 oc apply -f 4-sleep-workload-qa.yaml -n fs-mesh-qa
 ```
 
-This completes the baseline setup for the cluster. At this point, you can test with:
-
-```
-export SOURCE_POD=$(oc get pod -l app=sleep -o jsonpath={.items..metadata.name} -n fs-mesh-dev )
-
-oc exec "$SOURCE_POD" -n fs-mesh-dev -c sleep -- curl -sL -o /dev/null -D - https://edition.cnn.com/politics
-```
-
-you will not get a response. This is because the ServiceMeshControlPlane has *outboundTrafficPolicy* set to REGISTRY_ONLY. Since www.google.com is not in the service registry, it will not work. 
-
 ### Set egress rules
 
 Deny all egress from fs-mesh-dev namespace
@@ -71,18 +60,30 @@ Allow only access to edition.cnn.com  from istio-system namespace
 
 `oc apply -f ./policies/0-egressnetworkpolicy.yaml`
 
+This completes the baseline setup for the cluster. At this point, you can test with:
+
+```
+export SOURCE_POD=$(oc get pod -l app=sleep -o jsonpath={.items..metadata.name} -n fs-mesh-dev )
+
+oc exec "$SOURCE_POD" -n fs-mesh-dev -c sleep -- curl -sL -o /dev/null -D - https://edition.cnn.com/politics
+```
+
+you will not get a response. This is because the ServiceMeshControlPlane has *outboundTrafficPolicy* set to REGISTRY_ONLY. Since edition.cnn.com is not in the service registry, it will not work. 
+
+
+
 ## Configure egress gateway to access edition.cnn.com
 
 `oc apply -f ./policies/1-cnn-gateway.yml`
 
 ### Enabling CNN Access in fs-mesh-dev and fs-mesh-qa
-In order to get curl to work in fs-mesh-dev.sleep and fs-mesh-qa.sleep,, add a ServiceEntry resource.
+In order to get curl to work in fs-mesh-dev.sleep and fs-mesh-qa.sleep, add a ServiceEntry resource.
 
 ```
-oc apply -f ./policies/2-cnn-serviceEntries.yml
+oc apply -f ./policies/2-cnn-serviceEntry.yml
 ```
 
-Setup virtual service to route calls to edition.cnn.com to the egress gateway:
+Setup virtual service to route calls from the fs-mesh-dev and fs-mesh-qa namespaces to edition.cnn.com via the egress gateway:
 
 ```
 oc apply -f ./policies/3-cnn-virtualService.yml
