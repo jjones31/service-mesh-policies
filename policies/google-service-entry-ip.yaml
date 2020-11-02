@@ -5,6 +5,8 @@ metadata:
 spec:
   hosts:
   - "www.foobar.com" # Used as part of the host field and to attach rules. 
+  addresses:
+  - 74.125.138.103
   exportTo:
   - "."
   ports:
