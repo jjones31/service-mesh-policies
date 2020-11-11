@@ -1,0 +1,21 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: google-service-entry
+spec:
+  hosts:
+  - "www.foobar.com" # Used as part of the host field and to attach rules. 
+  addresses:
+  - 74.125.138.103
+  exportTo:
+  - "."
+  ports:
+  - number: 80
+    name: http
+    protocol: http
+  location: MESH_EXTERNAL
+  resolution: STATIC
+  endpoints:
+  - address: 74.125.138.103 # Google's address
+  #- address: 192.168.0.1 # Bad address
+  #- address: 151.101.1.67 # CNN
