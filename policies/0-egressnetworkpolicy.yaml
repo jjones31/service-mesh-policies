@@ -30,6 +30,9 @@ spec:
   - type: Allow
     to:
       dnsName: edition.cnn.com 
+  - type: Allow
+    to:
+      dnsName: t-test.apps.cluster-fiserv-71cc.fiserv-71cc.example.opentlc.com
   - type: Deny
     to:
       cidrSelector: 0.0.0.0/0
