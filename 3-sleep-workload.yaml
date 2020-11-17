@@ -2,11 +2,13 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: sleep
+  namespace: fs-mesh-dev
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: sleep
+  namespace: fs-mesh-dev
   labels:
     app: sleep
 spec:
@@ -20,6 +22,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: sleep
+  namespace: fs-mesh-dev
 spec:
   replicas: 1
   selector:

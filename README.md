@@ -1,5 +1,5 @@
 # Introduction
-OpenShift Service Mesh (OSSM) provides the ability to add policies for authorization and telemetry. This repository represents my exploration into the varios ways to limit egress traffic from single control plane with two different namespaces/projects as members. 
+OpenShift Service Mesh (OSSM) provides the ability to add policies for authorization and telemetry. This repository represents my exploration into the various ways to limit egress traffic to a defined list of hostnames from specific pods (identified by labels) in specific namespaces.
 
 ### Cluster Baseline
 In order to setup the cluster, run the following scripts. 

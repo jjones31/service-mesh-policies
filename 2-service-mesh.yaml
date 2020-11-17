@@ -1,11 +1,11 @@
 ---
-apiVersion: maistra.io/v1
+apiVersion: maistra.io/v2
 kind: ServiceMeshControlPlane
 metadata:
   name: fs-control-plane
   namespace: istio-system
 spec:
-  version: v1.1
+  version: v2.0
   istio:
     global:
         # Enable mTLS
@@ -41,9 +41,6 @@ spec:
         #       hosts are setup correctly. 
         ior_enabled: true
 
-        # Enable SDS (Secret Discovery Service) - Does not work with current version of Service Mesh
-        sds: 
-          enabled: false
     mixer:
       policy:
         autoscaleEnabled: false
